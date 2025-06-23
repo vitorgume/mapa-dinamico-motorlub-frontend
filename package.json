@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^7.1.2",
     "@react-google-maps/api": "^2.20.6",
     "@sentry/react": "^9.28.1",
     "@sentry/replay": "^7.116.0",

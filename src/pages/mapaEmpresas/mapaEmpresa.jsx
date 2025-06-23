@@ -7,6 +7,7 @@ import './mapaEmpresa.css';
 import { consultaEmpresas } from "./mapaEmpresa.service.js";
 import { useEffect, useState } from "react";
 import * as Sentry from "@sentry/react";
+import { CircularProgress } from "@mui/material";
 
 export default function MapaEmpresa() {
 
@@ -17,6 +18,7 @@ export default function MapaEmpresa() {
     const [empresaSelecionada, setEmpresaSelecionada] = useState(null);
     const [filtros, setFiltros] = useState(null);
     const [termoBusca, setTermoBusca] = useState("");
+    const [carregando, setCarregando] = useState(true);
 
     function filtrarEmpresas(empresas) {
         if (!filtros && !termoBusca) return empresas;
@@ -55,8 +57,16 @@ export default function MapaEmpresa() {
         const idRepresentante = localStorage.getItem('id-representante');
 
         async function carregarEmpresas(id) {
-            const empresasConsulta = await consultaEmpresas(id);
-            setEmpresas(empresasConsulta);
+            setCarregando(true);
+            try {
+                const empresasConsulta = await consultaEmpresas(id);
+                setEmpresas(empresasConsulta);
+            } catch (error) {
+                console.error("Erro ao carregar empresas:", error);
+                Sentry.captureException(error);
+            } finally {
+                setCarregando(false);
+            }
         }
 
         carregarEmpresas(idRepresentante);
@@ -77,13 +87,20 @@ export default function MapaEmpresa() {
                 onApplyFilters={setFiltros}
             />
 
-            <Mapa
-                empresas={filtrarEmpresas(empresas)}
-                onAbrirDetalhes={(empresa) => {
-                    setEmpresaSelecionada(empresa);
-                    setDetalhesEmpresaAberto(true);
-                }}
-            />
+            {carregando ? (
+                <div className="loading-container">
+                    <CircularProgress size={60} thickness={4} />
+                    <p className="loading-text">Carregando empresas...</p>
+                </div>
+            ) : (
+                <Mapa
+                    empresas={filtrarEmpresas(empresas)}
+                    onAbrirDetalhes={(empresa) => {
+                        setEmpresaSelecionada(empresa);
+                        setDetalhesEmpresaAberto(true);
+                    }}
+                />
+            )}
 
             <DetalhesEmpresa
                 aberto={detalhesEmpresaAberto}
@@ -94,4 +111,4 @@ export default function MapaEmpresa() {
             <BottomNavigate />
         </div>
     );
-} 
+}
