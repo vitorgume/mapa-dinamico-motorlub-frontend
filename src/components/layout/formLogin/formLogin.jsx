@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { notificarErro, notificarSucesso } from '../../../utils/notificacao';
 
 export default function FormLogin() {
-    const [telefone, setTelefone] = useState('');
+    const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
 
     const navigate = useNavigate();
@@ -25,7 +25,7 @@ export default function FormLogin() {
         let loginResponse;
 
         try {
-            loginResponse = await autenticar(senha, telefone);
+            loginResponse = await autenticar(senha, email);
         } catch (error) {
             notificarErro("Credências erradas !");
             console.error(error);
@@ -43,13 +43,13 @@ export default function FormLogin() {
         <>
             <form id="loginForm" onSubmit={handleSubmit}>
                 <div className="form-group">
-                    <label className="form-label" htmlFor="email">Telefone</label>
+                    <label className="form-label" htmlFor="email">Email</label>
                     <input
-                        type="text"
-                        id="telefone"
+                        type="email"
+                        id="email"
                         className="form-input"
-                        value={telefone}
-                        onChange={(e) => setTelefone(e.target.value)}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         required
                     />
                 </div>

@@ -1,0 +1,72 @@
+.comentario-container {
+    padding: 0.7rem;
+    background-color: #ecf0f1;
+    border-radius: 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+
+.comentario-container > h2 {
+    font-size: 1.3rem;
+}
+
+.comentario-container > textarea {
+    font-size: 1.1rem;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid #bdc3c7;
+    resize: vertical;
+    min-height: 80px;
+}
+
+.comentario-container > textarea:disabled {
+    background-color: #f8f9fa;
+    border: 1px solid #ecf0f1;
+    color: #2c3e50;
+    cursor: default;
+}
+
+.comentario-container > textarea.editando {
+    background-color: #fff;
+    border: 1px solid #3498db;
+    box-shadow: 0 0 3px rgba(52, 152, 219, 0.5);
+}
+
+.botoes-container {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.botoes-container > button {
+    min-width: 80px;
+    height: 2rem;
+    font-size: 1.1rem;
+    border-radius: 0.5rem;
+    border: none;
+    background-color: #3498db;
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.botoes-container > button:hover {
+    background-color: #2980b9;
+}
+
+.botao-salvar {
+    background-color: #2ecc71;
+}
+
+.botao-salvar:hover {
+    background-color: #27ae60;
+}
+
+.botao-cancelar {
+    background-color: #e74c3c;
+}
+
+.botao-cancelar:hover {
+    background-color: #c0392b;
+}

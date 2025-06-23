@@ -1,13 +1,16 @@
 import './detalhesEmpresa.css';
 import { useState, useEffect } from 'react';
-import { alteraStatus } from "./detalhesEmpresa.service.js";
+import { alteraStatus, listarComentarios, cadastrarComentario } from "./detalhesEmpresa.service.js";
 import { atualizarAnotacoes } from "./detalhesEmpresa.service.js";
 import HeaderDetalhesEmpresa from './header/headerDetalhesEmpresa.jsx';
 import { notificarSucesso, notificarErro } from '../../../utils/notificacao.js';
+import Comenatario from './comentario/comentario.jsx';
 
 export default function DetalhesEmpresa({ aberto, onClose, empresa, atualizarEmpresa }) {
   const [loading, setLoading] = useState(false);
-  const [anotacoes, setAnotacoes] = useState('');
+  const [comentarios, setComentarios] = useState([]);
+  const [modalAberto, setModalAberto] = useState(false);
+  const [novoComentario, setNovoComentario] = useState('');
 
   const handleToggleVisitado = async () => {
     setLoading(true);
@@ -23,23 +26,50 @@ export default function DetalhesEmpresa({ aberto, onClose, empresa, atualizarEmp
     }
   };
 
-  const handleSalvarAnotacoes = async () => {
+  const handleSalvarAnotacoes = async (comentario) => {
     try {
-      const empresaAtualizada = await atualizarAnotacoes(empresa.id, anotacoes);
-      atualizarEmpresa(empresaAtualizada);
-      notificarSucesso("Cometários atualizados com sucesso !")
+      const anotacaoAtualizada = await atualizarAnotacoes(comentario.id, comentario);
+      const anotacoesAtualizadas = comentarios.map(emp =>
+        emp.id === anotacaoAtualizada.id ? anotacaoAtualizada : emp
+      );
+      setComentarios(anotacoesAtualizadas);
     } catch (err) {
       console.error("Erro ao salvar anotações: ", err);
       notificarErro("Problema na atualização do comentário.")
     }
   };
 
+  async function salvarComentario(novoComentario) {
+    try {
+      const comentarioNovo = {empresaDto: empresa, conteudo: novoComentario}
+
+      const comentarioCriado = await cadastrarComentario(comentarioNovo);
+      setComentarios([...comentarios, comentarioCriado]);
+      setModalAberto(false);
+      setNovoComentario('');
+      notificarSucesso('Comentário cadastrado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao cadastrar comentário:', error);
+      notificarErro('Erro ao cadastrar comentário.');
+    }
+  }
+
   useEffect(() => {
+    const fetchComentarios = async () => {
+      try {
+        const comentariosEmpresa = await listarComentarios(empresa.id);
+        setComentarios(comentariosEmpresa);
+      } catch (error) {
+        console.error('Erro ao buscar comentários:', error);
+        notificarErro('Erro ao carregar comentários.');
+      }
+    };
+
     if (empresa) {
-      console.log(empresa);
-      setAnotacoes(empresa.comentario || '');
+      fetchComentarios();
     }
   }, [empresa]);
+
 
   if (!empresa) return null;
 
@@ -85,17 +115,49 @@ export default function DetalhesEmpresa({ aberto, onClose, empresa, atualizarEmp
         </div>
         <div className="comentarios-section">
           <h3>Comentários</h3>
-          <textarea
-            className="comentarios-textarea"
-            value={anotacoes}
-            onChange={(e) => setAnotacoes(e.target.value)}
-            rows={6}
-            placeholder="Escreva aqui suas observações sobre esta empresa..."
-          />
-          <button className="btn btn-primary" onClick={handleSalvarAnotacoes}>
-            Salvar
-          </button>
+          { comentarios.map(com => {
+            return (
+              <Comenatario
+                comentario={com}
+                salvarComentario={handleSalvarAnotacoes}
+              />
+            );
+          })}
+
+<button className='btn-cadastrar-comentario' onClick={() => setModalAberto(true)}>Cadastrar</button>
+
         </div>
+
+        {modalAberto && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h2>Novo Comentário</h2>
+              <textarea
+                className="modal-textarea"
+                value={novoComentario}
+                onChange={(e) => setNovoComentario(e.target.value)}
+                placeholder="Digite seu comentário aqui..."
+              />
+              <div className="modal-buttons">
+                <button
+                  className="modal-button modal-button-cancelar"
+                  onClick={() => {
+                    setModalAberto(false);
+                    setNovoComentario('');
+                  }}
+                >
+                  Cancelar
+                </button>
+                <button
+                  className="modal-button modal-button-salvar"
+                  onClick={() => salvarComentario(novoComentario)}
+                >
+                  Salvar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
