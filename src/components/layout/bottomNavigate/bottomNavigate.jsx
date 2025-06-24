@@ -17,11 +17,11 @@ export default function BottomNavigate() {
                 </Link>
 
                 <Link
-                    to="/empresas"
-                    className={`nav-item ${location.pathname === '/empresas' ? 'active' : ''}`}
+                    to="/pipeline"
+                    className={`nav-item ${location.pathname === '/pipeline' ? 'active' : ''}`}
                 >
                     <i className="fas fa-list nav-icon"></i>
-                    <span>Lista</span>
+                    <span>Pipeline</span>
                 </Link>
 
                 <Link

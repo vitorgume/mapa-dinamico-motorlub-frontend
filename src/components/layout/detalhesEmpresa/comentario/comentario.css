@@ -7,7 +7,7 @@
     gap: 0.7rem;
 }
 
-.comentario-container > h2 {
+.header-comentario > h2 {
     font-size: 1.3rem;
 }
 
@@ -69,4 +69,21 @@
 
 .botao-cancelar:hover {
     background-color: #c0392b;
+}
+
+.header-comentario {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-comentario > button {
+    border: none;
+    border-radius: 1rem;
+}
+
+.header-comentario > button:hover {
+    cursor: pointer;
+    background-color: #d8d8d8;
 }

@@ -11,8 +11,9 @@ export async function alteraStatus(id) {
 }
 
 export async function atualizarAnotacoes(id, comentario) {
+  console.log(id, comentario);
   try {
-    const response = await api.put(`comentarios/${id}`, {comentario: comentario});
+    const response = await api.put(`comentarios/${id}`, comentario);
     return response.data;
   } catch (error) {
     console.error('Erro ao atualizar comentários da empresa:', error);
@@ -36,6 +37,15 @@ export async function cadastrarComentario(novoComentario) {
     return response.data;
   } catch (error) {
     console.error('Erro ao cadastrar comentário da empresa:', error);
+    throw error;
+  }
+}
+
+export async function deletarAnotacao(idComentario) {
+  try {
+    await api.delete(`comentarios/${idComentario}`);
+  } catch (error) {
+    console.error('Erro ao deletar comentário da empresa:', error);
     throw error;
   }
 }

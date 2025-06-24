@@ -1,6 +1,6 @@
 import './detalhesEmpresa.css';
 import { useState, useEffect } from 'react';
-import { alteraStatus, listarComentarios, cadastrarComentario } from "./detalhesEmpresa.service.js";
+import { alteraStatus, listarComentarios, cadastrarComentario, deletarAnotacao } from "./detalhesEmpresa.service.js";
 import { atualizarAnotacoes } from "./detalhesEmpresa.service.js";
 import HeaderDetalhesEmpresa from './header/headerDetalhesEmpresa.jsx';
 import { notificarSucesso, notificarErro } from '../../../utils/notificacao.js';
@@ -39,9 +39,20 @@ export default function DetalhesEmpresa({ aberto, onClose, empresa, atualizarEmp
     }
   };
 
+  const handleDeletarAnotacao = async (idComentario) => {
+    try {
+      await deletarAnotacao(idComentario);
+      const anotacoesAtualizadas = comentarios.filter(com => com.id !== idComentario);
+      setComentarios(anotacoesAtualizadas);
+    } catch (err) {
+      console.error("Erro ao deletar anotações: ", err);
+      notificarErro("Problema na deleção de comentários.");
+    }
+  }
+
   async function salvarComentario(novoComentario) {
     try {
-      const comentarioNovo = {empresaDto: empresa, conteudo: novoComentario}
+      const comentarioNovo = { empresaDto: empresa, conteudo: novoComentario }
 
       const comentarioCriado = await cadastrarComentario(comentarioNovo);
       setComentarios([...comentarios, comentarioCriado]);
@@ -115,16 +126,18 @@ export default function DetalhesEmpresa({ aberto, onClose, empresa, atualizarEmp
         </div>
         <div className="comentarios-section">
           <h3>Comentários</h3>
-          { comentarios.map(com => {
+          {comentarios.map(com => {
             return (
               <Comenatario
+                key={com.id}
                 comentario={com}
                 salvarComentario={handleSalvarAnotacoes}
+                deletarComentario={handleDeletarAnotacao}
               />
             );
           })}
 
-<button className='btn-cadastrar-comentario' onClick={() => setModalAberto(true)}>Cadastrar</button>
+          <button className='btn-cadastrar-comentario' onClick={() => setModalAberto(true)}>Cadastrar</button>
 
         </div>
 
